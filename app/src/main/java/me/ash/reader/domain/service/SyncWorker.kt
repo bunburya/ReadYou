@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 import me.ash.reader.infrastructure.preference.SyncIntervalPreference
 import me.ash.reader.infrastructure.preference.SyncOnlyOnWiFiPreference
 import me.ash.reader.infrastructure.preference.SyncOnlyWhenChargingPreference
-import java.util.*
+import me.ash.reader.infrastructure.widget.WidgetUpdateManager
 import java.util.concurrent.TimeUnit
 
 @HiltWorker
@@ -20,6 +20,7 @@ class SyncWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val accountService: AccountService,
     private val rssService: RssService,
+    private val widgetUpdateManager: WidgetUpdateManager
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result =
@@ -27,6 +28,7 @@ class SyncWorker @AssistedInject constructor(
             Log.i("RLog", "doWork: ")
             rssService.get().sync(this@SyncWorker).also {
                 rssService.get().clearKeepArchivedArticles()
+                widgetUpdateManager.update()
             }
         }
 

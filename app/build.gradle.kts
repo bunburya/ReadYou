@@ -176,6 +176,10 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.appcompat)
 
+    // Glance
+    implementation(libs.glance.appwidget)
+    implementation(libs.glance.material)
+
     // Markdown
     implementation(libs.jetbrains.markdown)
 

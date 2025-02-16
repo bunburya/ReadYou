@@ -6,18 +6,18 @@ import android.database.CursorWindow
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.util.Consumer
-import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import androidx.profileinstaller.ProfileInstallerInitializer
 import coil.ImageLoader
 import coil.compose.LocalImageLoader
@@ -43,6 +43,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var accountDao: AccountDao
+
+    private lateinit var navController: NavHostController
+    private var pendingNavRoute: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,8 +83,24 @@ class MainActivity : AppCompatActivity() {
             requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
 
+        // Store the navigation route to handle after initialization
+        intent?.extras?.getString(ActionKeys.NAV_ROUTE.name)?.let { uri ->
+            pendingNavRoute = uri
+        }
 
         setContent {
+            navController = rememberNavController()
+
+            LaunchedEffect(Unit) {
+                pendingNavRoute?.let {
+                    navController.navigate(it) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                    pendingNavRoute = null
+                }
+            }
+
             CompositionLocalProvider(
                 LocalImageLoader provides imageLoader,
             ) {
@@ -99,12 +118,39 @@ class MainActivity : AppCompatActivity() {
                                 removeOnNewIntentListener(listener)
                             }
                         }
-                        HomeEntry(subscribeViewModel = subscribeViewModel)
+                        HomeEntry(
+                            subscribeViewModel = subscribeViewModel,
+                            navController = navController
+                        )
                     }
                 }
             }
         }
+
+        handleIntent(intent)
     }
+
+    override fun onNewIntent(newIntent: Intent) {
+        super.onNewIntent(newIntent)
+        handleIntent(newIntent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        val route = intent?.getStringExtra(ActionKeys.NAV_ROUTE.name)
+        // If navController is already initialised, navigate to the given route, otherwise, save it
+        // for when initialisation is complete
+        if (::navController.isInitialized) {
+            route?.let {
+                navController.navigate(it) {
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+        } else {
+            pendingNavRoute = route
+        }
+    }
+
 }
 
 private fun Intent.getTextOrNull(): String? {
