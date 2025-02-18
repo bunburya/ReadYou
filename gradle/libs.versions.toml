@@ -3,7 +3,6 @@
 androidGradlePlugin = "8.2.1"
 
 # Kotlin
-glanceAppwidget = "1.1.1"
 kotlin = "1.9.22"
 ksp = "1.9.22-1.0.17"
 
@@ -84,8 +83,8 @@ compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 
 # Glance
-glance-material = { group = "androidx.glance", name = "glance-material3", version.ref = "glance" }
-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
+glance-material3 = { group = "androidx.glance", name = "glance-material3", version.ref = "glance" }
+glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
 
 # Accompanist
 accompanist-swiperefresh = { group = "com.google.accompanist", name = "accompanist-swiperefresh", version.ref = "accompanist" }

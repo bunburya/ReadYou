@@ -178,7 +178,7 @@ dependencies {
 
     // Glance
     implementation(libs.glance.appwidget)
-    implementation(libs.glance.material)
+    implementation(libs.glance.material3)
 
     // Markdown
     implementation(libs.jetbrains.markdown)
