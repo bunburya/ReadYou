@@ -90,7 +90,6 @@ private fun AsyncImage(
 ) {
     var context = LocalContext.current
     var loadedBitmap by remember(imageUrl) { mutableStateOf<Bitmap?>(null) }
-    Log.d("AsyncImage", "Querying imageUrl: $imageUrl")
     LaunchedEffect(imageUrl) {
         withContext(Dispatchers.IO) {
             val request = ImageRequest.Builder(context)
@@ -102,7 +101,6 @@ private fun AsyncImage(
                 }
                 .build()
             val result = loader.execute(request)
-            Log.d("AsyncImage", "Got result: $result")
             if (result is ErrorResult) {
                 Log.e("AsyncImage", "Error: ${result.throwable}")
             }

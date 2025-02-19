@@ -3,5 +3,7 @@
     android:initialLayout="@layout/glance_default_loading_layout"
     android:minWidth="276dp"
     android:minHeight="102dp"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
     >
 </appwidget-provider>
